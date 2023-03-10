@@ -1,16 +1,17 @@
 package vigil.solution1
 
 import org.scalatestplus.play.PlaySpec
+import vigil.LocalStorageManager
 
 import java.io.File
 import scala.io.Source
 
-class VigilInterviewProblemSpec extends PlaySpec {
+class VigilInterviewProblemSolution1Spec extends PlaySpec {
   val dirName = "/src/test/scala/vigil/testcasefiles/input2/"
   val outputPath = "/output/"
   val localStorageManager = new LocalStorageManager(dirName, outputPath)
 
-  val sut = new VigilInterviewProblem(localStorageManager)
+  val sut = new VigilInterviewProblemSolution1(localStorageManager)
 
   "solveTheProblem" should {
     "find the values that occur odd number of the times and append key and value in the tsv file" in {

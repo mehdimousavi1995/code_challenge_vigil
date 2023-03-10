@@ -1,4 +1,4 @@
-package vigil.solution1
+package vigil
 
 import java.io.{File, PrintWriter}
 import scala.annotation.tailrec
@@ -6,16 +6,24 @@ import scala.io.Source
 import scala.util.Try
 
 class LocalStorageManager(val inputDirName: String, outputDirName: String) {
+  lazy val output = new File(os.pwd + outputDirName + "output.tsv")
+  lazy val writer = new PrintWriter(output)
+
+
+  def writeToOutput(key: Long, value: Long): Unit = {
+    writer.write(s"$key\t$value\n")
+  }
+
+  def closeOutput = writer.close()
 
 
   def writeToOutput(result: List[(Long, Long)]): Unit = {
-    val output = new File(os.pwd + outputDirName + "output.tsv")
     if (output.exists()) {
       output.delete()
     }
     val writer = new PrintWriter(output)
     writeRecursively(result)
-    writer.close()
+    closeOutput
 
     @tailrec
     def writeRecursively(list: List[(Long, Long)]): Unit = list match {
@@ -42,6 +50,14 @@ class LocalStorageManager(val inputDirName: String, outputDirName: String) {
       val value: Long = Try(l(1).toLong).toOption.getOrElse(0L)
       key -> value
     }
+  }
+
+  def readFileLineByLineAndApplyTask(filePath: String, task: => String => Unit): Unit = {
+    val source = Source.fromFile(filePath)
+    for (line <- source.getLines()) {
+      task(line)
+    }
+    source.close()
   }
 
   def getAllCsvAndTsvFilePath: Option[List[String]] = {

@@ -1,6 +1,8 @@
 package vigil.solution1
 
-class VigilInterviewProblem(localStorageManager: LocalStorageManager) {
+import vigil.LocalStorageManager
+
+class VigilInterviewProblemSolution1(localStorageManager: LocalStorageManager) {
 
   def solveTheProblem(): Unit = {
     println("Starting to calculate the output")
