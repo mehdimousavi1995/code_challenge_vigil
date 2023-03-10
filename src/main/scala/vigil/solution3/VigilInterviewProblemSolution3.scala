@@ -34,12 +34,8 @@ class VigilInterviewProblemSolution3(localStorageManager: LocalStorageManager) {
         }
         .toDF()
     }.foreach { result =>
-//      result.show()
       result.repartition(1).write.mode(SaveMode.Overwrite).option("delimiter", "\\t").csv(os.pwd + "/output/output.tsv")
     }
   }
-
-
-
 
 }

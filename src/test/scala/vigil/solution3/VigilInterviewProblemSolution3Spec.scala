@@ -5,6 +5,7 @@ import vigil.LocalStorageManager
 
 import java.io.File
 import scala.io.Source
+import scala.reflect.io.Directory
 
 class VigilInterviewProblemSolution3Spec extends PlaySpec {
   val dirName = "/src/test/scala/vigil/testcasefiles/input2/"
@@ -15,8 +16,8 @@ class VigilInterviewProblemSolution3Spec extends PlaySpec {
 
   "solveTheProblem" should {
     "find the values that occur odd number of the times and append key and value in the tsv file" in {
+//      Thread.sleep(1000)
       sut.solveTheProblem()
-
       val expectedOutputForAllTheFilesInInput2 = Map(
         1 -> 5,
         2 -> 5,
@@ -36,8 +37,8 @@ class VigilInterviewProblemSolution3Spec extends PlaySpec {
         val list = l.split("\t")
         expectedOutputForAllTheFilesInInput2(list.head.toLong) mustBe list(1).toLong
       }
-      (new File(os.pwd + outputPath)).delete()
-
+      val dir = new Directory(new File(os.pwd + outputPath))
+      dir.deleteRecursively()
     }
   }
 

@@ -17,4 +17,11 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "3.2.1"
 libraryDependencies += "com.typesafe" % "config" % "1.4.2"
 libraryDependencies +=      "net.debasishg" %% "redisclient" % "3.41"
 
+parallelExecution in Test := false
+Test / logBuffered := false
+
+Test / parallelExecution := false
+
+
+
 

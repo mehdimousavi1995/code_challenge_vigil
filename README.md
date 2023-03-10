@@ -96,3 +96,33 @@ To speed up the process of reading files from the input directory that contains 
 ```
 
 This algorithm has a time complexity of O(n) and a space complexity of M(n)..
+
+# Third Solution
+As mentioned in the document, to save the results in Spark local, I looked into the Spark documentation and found out that it could be used to solve this particular problem. As I have just started learning Spark around three hours ago and have no prior experience with it, this solution may be unusable in a production environment. The solution is exactly like the first one, except that Spark supports a built-in function called reduceByKey, which we can use instead of groupBy. Here is the code for this solution: 
+ ```scala
+  def solveTheProblem(): Unit = {
+    localStorageManager.getAllCsvAndTsvFilePath().map { files =>
+      val dataframes = files.map { filePath =>
+        if (filePath.endsWith(".csv")) {
+          ss.read.option("header", true).csv(filePath)
+        } else {
+          ss.read.option("header", true).option("delimiter", "\\t").csv(filePath)
+        }
+      }.toVector
+      dataframes.map(
+        _
+          .as[(Option[String], Option[String])]
+          .rdd
+          .map(kv => (kv._1.flatMap(l => Try(l.toLong).toOption).getOrElse(0L), kv._2.flatMap(l => Try(l.toLong).toOption).getOrElse(0L)))
+          .reduceByKey(_ ^ _)
+      )
+        .reduceLeft { (a, b) =>
+          a.union(b).reduceByKey(_ ^ _)
+        }
+        .toDF()
+    }.foreach { result =>
+      result.repartition(1).write.mode(SaveMode.Overwrite).option("delimiter", "\\t").csv(os.pwd + "/output/output.tsv")
+    }
+  }
+
+```
