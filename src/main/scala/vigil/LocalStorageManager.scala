@@ -9,27 +9,26 @@ class LocalStorageManager(val inputDirName: String, outputDirName: String) {
   lazy val output = new File(os.pwd + outputDirName + "output.tsv")
   lazy val writer = new PrintWriter(output)
 
-
   def writeToOutput(key: Long, value: Long): Unit = {
     writer.write(s"$key\t$value\n")
   }
-
   def closeOutput = writer.close()
 
 
   def writeToOutput(result: List[(Long, Long)]): Unit = {
-    if (output.exists()) {
-      output.delete()
+    val out = new File(os.pwd + outputDirName + "output.tsv")
+    if (out.exists()) {
+      out.delete()
     }
-    val writer = new PrintWriter(output)
+    val wr = new PrintWriter(out)
     writeRecursively(result)
-    closeOutput
+    wr.close()
 
     @tailrec
     def writeRecursively(list: List[(Long, Long)]): Unit = list match {
-      case (k, v) :: Nil => writer.write(s"$k\t$v")
+      case (k, v) :: Nil => wr.write(s"$k\t$v")
       case (k, v) :: ls =>
-        writer.write(s"$k\t$v\n")
+        wr.write(s"$k\t$v\n")
         writeRecursively(ls)
       case Nil =>
     }

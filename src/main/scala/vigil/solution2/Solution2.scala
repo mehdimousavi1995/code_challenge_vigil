@@ -12,7 +12,4 @@ object Solution2 extends App {
   redisClient.flushAllValues()
   val vips = new VigilInterviewProblemSolution2(localStorageManager, redisClient)
   vips.solveTheProblem()
-
-
-
 }
