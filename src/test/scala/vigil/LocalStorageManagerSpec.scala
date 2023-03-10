@@ -5,6 +5,7 @@ import vigil.LocalStorageManager
 
 import java.io.File
 import scala.io.Source
+import scala.util.Try
 
 class LocalStorageManagerSpec extends PlaySpec {
 
@@ -64,7 +65,9 @@ class LocalStorageManagerSpec extends PlaySpec {
         val list = l.split("\t")
         map(list.head.toLong) mustBe list(1).toLong
       }
-      (new File(oPath)).delete()
+      Try {
+        (new File(oPath)).delete()
+      }
     }
   }
 

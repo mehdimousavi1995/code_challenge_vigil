@@ -5,6 +5,7 @@ import vigil.LocalStorageManager
 
 import java.io.File
 import scala.io.Source
+import scala.util.Try
 
 class VigilInterviewProblemSolution2Spec extends PlaySpec {
   val dirName = "/src/test/scala/vigil/testcasefiles/input2/"
@@ -37,7 +38,9 @@ class VigilInterviewProblemSolution2Spec extends PlaySpec {
         val list = l.split("\t")
         expectedOutputForAllTheFilesInInput2(list.head.toLong) mustBe list(1).toLong
       }
-      (new File(oPath)).delete()
+      Try {
+        (new File(oPath)).delete()
+      }
     }
   }
 
