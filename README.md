@@ -60,9 +60,39 @@ As the amount of data increases, we can add more nodes to the Redis cluster to a
 
 ![image](./redisCluster.png)
 
-Our process involves reading each key from a file and retrieving the associated value from Redis. We will then XOR this value with the new value that we have read from the file and store the result back into Redis. Once we have completed this step for all the keys in the file, we will dump all the key-value pairs we have stored into an output file located on a remote server that can accommodate files of any size. By doing so, we can ensure that the data is safely and securely stored without any concerns about file size limitations.
+Our process involves reading each key from a file and retrieving the associated value from Redis. We will then XOR this value with the new value that we have read from the file and store the result back into Redis. Once we have completed all the files, we will dump all the key-value pairs we have stored into an output file located on a remote server that can accommodate files of any size. By doing so, we can ensure that the data is safely and securely stored without any concerns about file size limitations.
 
-//below needs rewrite
+To speed up the process of reading files from the input directory that contains a list of TSV and CSV files, we can distribute the task across multiple threads. and we need to be careful and use some sort of locking mechanism to avoid data corruption. The following Scala code demonstrates this solution(I didn't use multiple threads to avoid any complication in implementation):
 
-To Speed up the proccess of reading from file after retreving list of tsv and csvs from input/ directory we will distribute the process between multiple threads.
+```scala
 
+  def solveTheProblem(): Unit = {
+    localStorageManager.getAllCsvAndTsvFilePath foreach { files =>
+      files.foreach { filePath =>
+        val delimiter = if (filePath.contains("csv")) "," else "\t"
+        localStorageManager.readFileLineByLineAndApplyTask(
+          filePath = filePath,
+          task = normalizeLineAndXorValuesForTheSameKeyInRedis(delimiter)
+        )
+      }
+    }
+    redisClient.getKeys.foreach { key =>
+      redisClient.get(key).map { value =>
+        localStorageManager.writeToOutput(key, value)
+      }
+    }
+    localStorageManager.closeOutput
+  }
+
+  def normalizeLineAndXorValuesForTheSameKeyInRedis(delimiter: String)(line: String): Unit = {
+    val l = line.split(delimiter)
+    val key: Long = Try(l.head.toLong).toOption.getOrElse(0L)
+    val value: Long = Try(l(1).toLong).toOption.getOrElse(0L)
+
+    val accXorValue = redisClient.get(key).getOrElse(0L)
+    redisClient.set(key, accXorValue ^ value)
+    ()
+  }
+```
+
+This algorithm has a time complexity of O(n) and a space complexity of M(n)..
