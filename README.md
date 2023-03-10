@@ -67,7 +67,7 @@ To speed up the process of reading files from the input directory that contains 
 ```scala
 
   def solveTheProblem(): Unit = {
-    localStorageManager.getAllCsvAndTsvFilePath foreach { files =>
+    localStorageManager.getAllCsvAndTsvFilePath() foreach { files =>
       files.foreach { filePath =>
         val delimiter = if (filePath.contains("csv")) "," else "\t"
         localStorageManager.readFileLineByLineAndApplyTask(

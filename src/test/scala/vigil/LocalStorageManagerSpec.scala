@@ -15,11 +15,11 @@ class LocalStorageManagerSpec extends PlaySpec {
   "getAllCsvAndTsvFilePath" should {
     "return nil when directory don't exists" in {
       val sut = new LocalStorageManager("/wrong-directory", outputPath)
-      sut.getAllCsvAndTsvFilePath mustBe None
+      sut.getAllCsvAndTsvFilePath() mustBe None
     }
 
     "return all csv and tsv files" in {
-      val result = sut.getAllCsvAndTsvFilePath
+      val result = sut.getAllCsvAndTsvFilePath()
       result.isDefined mustBe true
       result.get.size mustBe 2
       result.get.exists(_.endsWith("1.txt")) mustBe false

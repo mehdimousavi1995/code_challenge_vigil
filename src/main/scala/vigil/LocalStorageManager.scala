@@ -34,7 +34,7 @@ class LocalStorageManager(val inputDirName: String, outputDirName: String) {
     }
   }
 
-  def readAllKeyValueFromFile(): List[(Long, Long)] = getAllCsvAndTsvFilePath.map { allFilePath =>
+  def readAllKeyValueFromFile(): List[(Long, Long)] = getAllCsvAndTsvFilePath().map { allFilePath =>
     allFilePath.flatMap(readFromFile)
   }.getOrElse(Nil)
 
@@ -59,12 +59,12 @@ class LocalStorageManager(val inputDirName: String, outputDirName: String) {
     source.close()
   }
 
-  def getAllCsvAndTsvFilePath: Option[List[String]] = {
-    val d = new File(os.pwd + inputDirName)
+  def getAllCsvAndTsvFilePath(dir: String = inputDirName): Option[List[String]] = {
+    val d = new File(os.pwd + dir)
     if (d.exists && d.isDirectory) {
       val directories = d.listFiles.filter(f => f.isFile && (f.getName.endsWith(".csv") || f.getName.endsWith("tsv"))).toList
       Some(directories.map { f =>
-        val path = os.pwd + inputDirName + f.getName
+        val path = os.pwd + dir + f.getName
         println(path)
         path
       })
